@@ -1,140 +1,341 @@
-/* ------------------------------------------------ */
-/* 🎬 1. THE SLIDES (Text during the video)        */
-/* ------------------------------------------------ */
+/* 🔒 FORCE FULL SCREEN (React Safe) */
+.final-page {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #000;
+    z-index: 9999;
+    /* Ensures it sits on top of everything */
+}
 
-/* The container that holds the text */
-.cinematic-content {
+/* 🎥 VIDEO STYLING */
+.video-wrapper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.fullscreen-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* This eliminates white bars/borders */
+    display: block;
+}
+
+.video-overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 100vh;
-    z-index: 5;
-    /* Above video, below final card */
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    transition: background 1s ease;
+}
+
+.dark-mode {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+/* 📝 TEXT CONTENT LAYER */
+.content-layer {
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    text-align: center;
-    padding: 20px;
     cursor: pointer;
 }
 
-/* The Glass Box Effect for the Text Slides */
-.cinematic-title,
-.cinematic-subtitle,
-.start-prompt {
-    /* Glass Effect */
-    background: rgba(0, 0, 0, 0.25);
-    /* Subtle dark backing */
-    backdrop-filter: blur(4px);
-    /* Blurs video behind text */
-    padding: 20px 30px;
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+/* 💎 GLASS BOX (The text container) */
+.glass-box {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 85%;
 
-    /* Animation */
-    animation: fadeInUp 1s ease-out;
-    max-width: 90%;
-    margin: 10px 0;
+    /* ✨ THE FIX: FADE IN ONLY (No translate/movement) */
+    animation: fadeIn 0.8s ease-out;
 }
 
-/* 🖋️ Title Typography (The Big Text) */
 .cinematic-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #ffffff;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-    line-height: 1.2;
-    margin-bottom: 15px;
+    color: white;
+    font-size: 2rem;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-/* 🖋️ Subtitle Typography (The Story) */
 .cinematic-subtitle {
-    font-size: 1.4rem;
-    font-weight: 400;
-    color: #f0f0f0;
-    /* Slightly softer white */
-    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
-    line-height: 1.6;
+    color: #eee;
+    font-size: 1.2rem;
     white-space: pre-line;
-    /* Allows \n to create new lines */
 }
 
-/* The "Tap to continue" hint */
-.tap-instruction {
-    position: absolute;
-    bottom: 80px;
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.7);
-    letter-spacing: 1px;
+.tap-hint {
+    margin-top: 20px;
+    font-size: 0.8rem;
     text-transform: uppercase;
-    animation: pulse 2s infinite;
+    opacity: 0.7;
+    animation: pulse 1.5s infinite;
 }
 
-/* ------------------------------------------------ */
-/* 🎨 2. THEME VARIATIONS (Dynamic Fonts)          */
-/* ------------------------------------------------ */
+/* 💌 FINAL CARD LAYER */
+.final-layer {
+    position: absolute;
+    z-index: 20;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-/* 🌹 Romantic Theme */
-.theme-romantic .cinematic-title,
-.theme-romantic .glass-card h1 {
+.glass-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    color: white;
+    width: 90%;
+    max-width: 400px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+
+    /* ✨ FIX: FADE IN ONLY */
+    animation: fadeIn 1.5s ease-out;
+}
+
+.final-img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin: 15px 0;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.sign-off {
+    font-family: cursive;
+    margin-top: 15px;
+    font-size: 1.2rem;
+}
+
+/* ✨ ANIMATIONS (Pure Opacity, No Movement) */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.5;
+    }
+}
+
+/* 🎨 THEMES */
+.theme-romantic .cinematic-title {
     font-family: 'Playfair Display', serif;
     color: #ffebd7;
-    /* Gold Tint */
 }
 
-/* 🎉 Playful Theme */
-.theme-playful .cinematic-title,
-.theme-playful .glass-card h1 {
-    font-family: 'Fredoka One', cursive;
-    /* or Poppins */
-    color: #ffffff;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+.theme-playful .cinematic-title {
+    font-family: 'Comic Neue', cursive;
 }
 
-/* 🌌 Deep Theme */
-.theme-deep .cinematic-title,
-.theme-deep .glass-card h1 {
-    font-family: 'Cinzel', serif;
-    /* or Montserrat */
-    letter-spacing: 3px;
-    font-weight: 400;
+.theme-modern .cinematic-title {
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 2px;
 }
 
-/* 🧸 Cute Theme */
-.theme-cute .cinematic-title,
-.theme-cute .glass-card h1 {
-    font-family: 'Pacifico', cursive;
-    color: #ffcce0;
-    /* Pink Tint */
-    font-weight: 400;
-}
-
-/* ------------------------------------------------ */
-/* 🖼️ 3. FINAL CARD POLISH (Overrides)             */
-/* ------------------------------------------------ */
-
-.final-photo-container {
-    margin: 20px 0;
-    border-radius: 12px;
+/* 🔒 FORCE FULL SCREEN (React Safe) */
+.final-page {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     overflow: hidden;
-    border: 3px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    background: #000;
+    z-index: 9999;
+    /* Ensures it sits on top of everything */
 }
 
-.final-photo-preview {
+/* 🎥 VIDEO STYLING */
+.video-wrapper {
+    position: absolute;
     width: 100%;
-    max-height: 250px;
+    height: 100%;
+    z-index: 1;
+}
+
+.fullscreen-video {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    /* This eliminates white bars/borders */
     display: block;
 }
 
-.signature {
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    transition: background 1s ease;
+}
+
+.dark-mode {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+/* 📝 TEXT CONTENT LAYER */
+.content-layer {
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* 💎 GLASS BOX (The text container) */
+.glass-box {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 85%;
+
+    /* ✨ THE FIX: FADE IN ONLY (No translate/movement) */
+    animation: fadeIn 0.8s ease-out;
+}
+
+.cinematic-title {
+    color: white;
+    font-size: 2rem;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.cinematic-subtitle {
+    color: #eee;
+    font-size: 1.2rem;
+    white-space: pre-line;
+}
+
+.tap-hint {
     margin-top: 20px;
-    font-size: 1.1rem;
-    font-style: italic;
-    opacity: 0.9;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    opacity: 0.7;
+    animation: pulse 1.5s infinite;
+}
+
+/* 💌 FINAL CARD LAYER */
+.final-layer {
+    position: absolute;
+    z-index: 20;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    color: white;
+    width: 90%;
+    max-width: 400px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+
+    /* ✨ FIX: FADE IN ONLY */
+    animation: fadeIn 1.5s ease-out;
+}
+
+.final-img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin: 15px 0;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.sign-off {
+    font-family: cursive;
+    margin-top: 15px;
+    font-size: 1.2rem;
+}
+
+/* ✨ ANIMATIONS (Pure Opacity, No Movement) */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.5;
+    }
+}
+
+/* 🎨 THEMES */
+.theme-romantic .cinematic-title {
+    font-family: 'Playfair Display', serif;
+    color: #ffebd7;
+}
+
+.theme-playful .cinematic-title {
+    font-family: 'Comic Neue', cursive;
+}
+
+.theme-modern .cinematic-title {
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 2px;
 }

@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import Confetti from "react-confetti";
-import "./FinalLovePage.css";
+import "./FinalLovePage.css"; // Imports the CSS below
 
-// 🎥 Ensure your video is in public/videos/romantic_full.mp4
 const MAIN_VIDEO_SOURCE = "/videos/romantic_full.mp4";
 
 export default function FinalLovePage() {
@@ -18,10 +17,9 @@ export default function FinalLovePage() {
     const [isFinished, setIsFinished] = useState(false);
     const [videoStarted, setVideoStarted] = useState(false);
 
-    // 1. FETCH DATA FROM RENDER 🌍
+    // Fetch Data
     useEffect(() => {
         const API_BASE_URL = "https://love-journey-backend-eqyf.onrender.com";
-
         fetch(`${API_BASE_URL}/api/love/${slug}`)
             .then(res => {
                 if (!res.ok) throw new Error("Page not found");
@@ -32,41 +30,30 @@ export default function FinalLovePage() {
                 setLoading(false);
             })
             .catch(err => {
-                console.error("Error fetching story:", err);
+                console.error("Error:", err);
                 setError(true);
                 setLoading(false);
             });
     }, [slug]);
 
-    if (loading) return <div className="loading-screen">❤️ Loading your story...</div>;
-    if (error) return <div className="loading-screen">💔 Story not found or expired.</div>;
+    if (loading) return <div className="loading-screen">❤️ Loading...</div>;
+    if (error) return <div className="loading-screen">💔 Expired.</div>;
 
-    // 2. THE SCRIPTWRITER (4 Acts) 📝
+    // Script Logic
     const getMessage = () => {
         if (data.pageType === 'confession') {
-            let nervousText = "I'm a little shy...";
-            const level = data.nervousLevel ? data.nervousLevel.toLowerCase() : "";
-            if (level.includes("terrified")) nervousText = "Honestly? I'm terrified to say this 😰";
-            else if (level.includes("heart")) nervousText = "My heart is pounding right now 💓";
-
             return [
-                { title: `Hey ${data.partnerName}...`, subtitle: `I've been holding this back for a while.\n${nervousText}` },
-                { title: "It all started...", subtitle: `"${data.feelingsStart}"\nSince then, everything changed.` },
-                { title: "What I admire most...", subtitle: `Is your ${data.admireMost}.\nIt makes you so special to me.` },
+                { title: `Hey ${data.partnerName}...`, subtitle: "I've been holding this back for a while." },
+                { title: "It all started...", subtitle: `"${data.feelingsStart}"` },
+                { title: "What I admire most...", subtitle: `Is your ${data.admireMost}.` },
                 { title: "And now...", subtitle: "I have just one question for you..." }
             ][step];
         } else {
-            const feelings = data.feelings || [];
-            const feelingsString = feelings.length > 0
-                ? feelings.join(", ").replace(/, ([^,]*)$/, ' and $1')
-                : "happy";
-            const memoryTitle = data.memoryType ? `Remember our ${data.memoryType}?` : "A Special Moment";
-
             return [
-                { title: `To my favorite person, ${data.partnerName}`, subtitle: `Celebrating our beautiful journey of being\n✨ ${data.relationshipStatus} ✨` },
-                { title: "You make me feel...", subtitle: `So ${feelingsString}.\n(And I mean every word of that ❤️)` },
-                { title: memoryTitle, subtitle: `"${data.memoryText}"` },
-                { title: `I love ${data.appreciationCustom || data.appreciation}`, subtitle: `I can't wait for ${data.future}.\n\nLove, ${data.showYourName ? data.yourName : "Me"}` }
+                { title: `To ${data.partnerName}`, subtitle: `Celebrating our ${data.relationshipStatus} ✨` },
+                { title: "You make me feel...", subtitle: `So ${data.feelings ? data.feelings.join(", ") : "happy"} ❤️` },
+                { title: "Remember this?", subtitle: `"${data.memoryText}"` },
+                { title: `I love ${data.appreciation}`, subtitle: `Can't wait for ${data.future}` }
             ][step];
         }
     };
@@ -74,19 +61,16 @@ export default function FinalLovePage() {
     const content = getMessage() || {};
     const toneKey = data.tone ? data.tone.toLowerCase() : 'default';
 
-    // ⚡ 3. THE PAUSE LOGIC
+    // Pause Logic (every 8 seconds)
     const handleTimeUpdate = () => {
         if (!videoRef.current || isFinished) return;
-
         const currentTime = videoRef.current.currentTime;
-        const targetTime = (step + 1) * 8; // Steps at 8, 16, 24, 32s
-
+        const targetTime = (step + 1) * 8;
         if (currentTime >= targetTime && currentTime < targetTime + 0.3) {
             videoRef.current.pause();
         }
     };
 
-    // ⏭️ 4. HANDLE "NEXT" CLICK
     const handleNext = () => {
         if (!videoStarted) {
             setVideoStarted(true);
@@ -101,58 +85,54 @@ export default function FinalLovePage() {
     };
 
     return (
+        // "final-page" class handles the Full Screen logic in CSS
         <div className={`final-page theme-${toneKey}`}>
             {isFinished && <Confetti recycle={true} numberOfPieces={300} />}
 
-            <div className="video-background-container">
+            {/* Video Container */}
+            <div className="video-wrapper">
                 <video
                     ref={videoRef}
                     src={MAIN_VIDEO_SOURCE}
-                    className="cinematic-video"
+                    className="fullscreen-video"
                     playsInline
                     onTimeUpdate={handleTimeUpdate}
                     preload="auto"
                 />
-                <div className={`video-overlay ${isFinished ? 'darker-overlay' : ''}`}></div>
+                <div className={`video-overlay ${isFinished ? 'dark-mode' : ''}`}></div>
             </div>
 
+            {/* Text Slides */}
             {!isFinished && (
-                <div className="cinematic-content" onClick={handleNext}>
+                <div className="content-layer" onClick={handleNext}>
                     {!videoStarted ? (
-                        <div className="start-prompt">
+                        <div className="glass-box">
                             <h1>For {data.partnerName} ❤️</h1>
-                            <p>(Tap to begin your journey)</p>
+                            <p>(Tap to begin)</p>
                         </div>
                     ) : (
-                        <div className="text-slide fade-in" key={step}>
+                        // Added key={step} to trigger animation restart on change
+                        <div className="glass-box" key={step}>
                             <h1 className="cinematic-title">{content.title}</h1>
                             <p className="cinematic-subtitle">{content.subtitle}</p>
-                            <div className="tap-instruction">Tap to continue...</div>
+                            <div className="tap-hint">Tap to continue</div>
                         </div>
                     )}
                 </div>
             )}
 
+            {/* Final Card */}
             {isFinished && (
-                <div className="overlay fade-in">
-                    <div className="glass-card final-card">
+                <div className="final-layer">
+                    <div className="glass-card">
                         <h1>{data.pageType === 'confession' ? "Will you?" : "Forever Us"}</h1>
-                        <p className="final-message">
-                            {data.pageType === 'confession'
-                                ? data.theQuestion
-                                : `Here's to ${data.future} ❤️`}
-                        </p>
+                        <p className="final-msg">{data.pageType === 'confession' ? data.theQuestion : data.future}</p>
 
                         {data.photos && data.photos.length > 0 && (
-                            <div className="final-photo-container">
-                                <img src={data.photos[0].url} alt="Us" className="final-photo-preview" />
-                            </div>
+                            <img src={data.photos[0].url} alt="Us" className="final-img" />
                         )}
 
-                        <div className="signature">
-                            With all my love,<br />
-                            <strong>{data.showYourName ? data.yourName : "Your Secret Admirer"}</strong>
-                        </div>
+                        <div className="sign-off">Love, {data.yourName}</div>
                     </div>
                 </div>
             )}
