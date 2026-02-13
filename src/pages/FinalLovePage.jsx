@@ -1,34 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import Confetti from "react-confetti";
-import CinematicBackground from "../components/CinematicBackground";
 import "./FinalLovePage.css";
 
-// 🗺️ VIDEO ASSET MAP 
-const VIDEO_ASSETS = {
-    romantic: [
-        { video: "/videos/romantic_1_intro.mp4", image: "/videos/romantic_1_end.png" },
-        { video: "/videos/romantic_2_past.mp4", image: "/videos/romantic_2_end.png" },
-        { video: "/videos/romantic_3_present.mp4", image: "/videos/romantic_3_end.png" },
-        { video: "/videos/romantic_4_future.mp4", image: "/videos/romantic_4_end.png" }
-    ],
-    default: [
-        { video: "/videos/romantic_1_intro.mp4", image: "/videos/romantic_1_end.png" },
-        { video: "/videos/romantic_2_past.mp4", image: "/videos/romantic_2_end.png" },
-        { video: "/videos/romantic_3_present.mp4", image: "/videos/romantic_3_end.png" },
-        { video: "/videos/romantic_4_future.mp4", image: "/videos/romantic_4_end.png" }
-    ]
+// 🗺️ VIDEO ASSET MAP (Ensure these videos are 40s+ long)
+const THEME_VIDEOS = {
+    romantic: "/videos/romantic_full.mp4",
+    playful: "/videos/playful_full.mp4",
+    deep: "/videos/deep_full.mp4",
+    cute: "/videos/cute_full.mp4",
+    default: "/videos/romantic_full.mp4"
 };
 
 export default function FinalLovePage() {
     const { slug } = useParams();
+    const videoRef = useRef(null);
+
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
-    const [step, setStep] = useState(0);
-    const [isFinished, setIsFinished] = useState(false);
 
-    // 1. FETCH DATA FROM REAL BACKEND 🌍
+    const [step, setStep] = useState(0); // 0, 1, 2, 3 (Slides), 4 (End)
+    const [isFinished, setIsFinished] = useState(false);
+    const [videoStarted, setVideoStarted] = useState(false);
+
+    // 1. FETCH DATA 🌍
     useEffect(() => {
         const API_BASE_URL = import.meta.env.VITE_API_URL || "https://love-journey-backend-eqyf.onrender.com";
 
@@ -48,81 +44,116 @@ export default function FinalLovePage() {
             });
     }, [slug]);
 
-    // ⚡ 2. THE SMOOTH-TRANSITION PRELOADER 
-    useEffect(() => {
-        if (data) {
-            const toneKey = data.tone ? data.tone.toLowerCase() : 'default';
-            const themeAssets = VIDEO_ASSETS[toneKey] || VIDEO_ASSETS.default;
-
-            themeAssets.forEach((asset) => {
-                const videoTrigger = document.createElement("video");
-                videoTrigger.src = asset.video;
-                videoTrigger.preload = "auto"; // Forces the browser to cache the file
-            });
-        }
-    }, [data]);
-
     if (loading) return <div className="loading-screen">❤️ Loading your story...</div>;
     if (error) return <div className="loading-screen">💔 Story not found or expired.</div>;
 
-    // 3. GET CURRENT ASSETS
-    const toneKey = data.tone ? data.tone.toLowerCase() : 'default';
-    const themeAssets = VIDEO_ASSETS[toneKey] || VIDEO_ASSETS.default;
-    const currentScene = themeAssets[step] || themeAssets[themeAssets.length - 1];
-
-    // 4. GENERATE TEXT CONTENT
+    // 2. THE SCRIPTWRITER (4 Acts) 📝
     const getMessage = () => {
         if (data.pageType === 'confession') {
-            const texts = [
-                { title: `Hey ${data.partnerName}...`, subtitle: "I've been meaning to tell you something." },
-                { title: "It all started...", subtitle: data.feelingsStart },
-                { title: `I really admire ${data.admireMost}`, subtitle: `(And honestly? My ${data.nervousLevel} right now 😅)` },
-                { title: "So I have to ask...", subtitle: data.theQuestion }
-            ];
-            return texts[step];
+            let nervousText = "I'm a little shy...";
+            const level = data.nervousLevel ? data.nervousLevel.toLowerCase() : "";
+            if (level.includes("terrified")) nervousText = "Honestly? I'm terrified to say this 😰";
+            else if (level.includes("heart")) nervousText = "My heart is pounding right now 💓";
+
+            return [
+                // Step 0: 0-8s
+                { title: `Hey ${data.partnerName}...`, subtitle: `I've been holding this back for a while.\n${nervousText}` },
+                // Step 1: 8-16s
+                { title: "It all started...", subtitle: `"${data.feelingsStart}"\nSince then, everything changed.` },
+                // Step 2: 16-24s
+                { title: "What I admire most...", subtitle: `Is your ${data.admireMost}.\nIt makes you so special to me.` },
+                // Step 3: 24-32s (The Buildup)
+                { title: "And now...", subtitle: "I have just one question for you..." }
+            ][step];
         } else {
-            const feelingsString = data.feelings && data.feelings.length > 0
-                ? data.feelings.join(", ").replace(/, ([^,]*)$/, ' and $1')
-                : "complete";
+            const feelings = data.feelings || [];
+            const feelingsString = feelings.join(", ").replace(/, ([^,]*)$/, ' and $1');
+            const memoryTitle = data.memoryType ? `Remember our ${data.memoryType}?` : "A Special Moment";
 
-            const appreciationText = data.appreciationCustom || data.appreciation;
-
-            const texts = [
-                { title: `To my favorite person, ${data.partnerName}`, subtitle: `Celebrating our beautiful ${data.relationshipStatus} journey.` },
-                { title: `Remember our ${data.memoryType}?`, subtitle: `"${data.memoryText}"` },
-                { title: `I appreciate ${appreciationText}`, subtitle: `You make me feel ${feelingsString}.` },
-                { title: "Our Future", subtitle: `${data.future} ✨ \n\n - Forever, ${data.showYourName ? data.yourName : "Me"}` }
-            ];
-            return texts[step];
+            return [
+                // Step 0: 0-8s
+                { title: `To my favorite person, ${data.partnerName}`, subtitle: `Celebrating our beautiful journey of being\n✨ ${data.relationshipStatus} ✨` },
+                // Step 1: 8-16s
+                { title: "You make me feel...", subtitle: `So ${feelingsString}.\n(And I mean every word of that ❤️)` },
+                // Step 2: 16-24s
+                { title: memoryTitle, subtitle: `"${data.memoryText}"` },
+                // Step 3: 24-32s
+                { title: `I love ${data.appreciationCustom || data.appreciation}`, subtitle: `I can't wait for ${data.future}.\n\nLove, ${data.showYourName ? data.yourName : "Me"}` }
+            ][step];
         }
     };
 
-    const content = getMessage();
+    const content = getMessage() || {};
+    const toneKey = data.tone ? data.tone.toLowerCase() : 'default';
+    const videoSrc = THEME_VIDEOS[toneKey] || THEME_VIDEOS.default;
 
+    // ⚡ 3. THE 32-SECOND PAUSE LOGIC
+    const handleTimeUpdate = () => {
+        if (!videoRef.current || isFinished) return; // Don't pause if finished!
+
+        const currentTime = videoRef.current.currentTime;
+        const targetTime = (step + 1) * 8; // Targets: 8, 16, 24, 32
+
+        // If we hit the target time (with small buffer), PAUSE
+        if (currentTime >= targetTime && currentTime < targetTime + 0.5) {
+            videoRef.current.pause();
+        }
+    };
+
+    // ⏭️ 4. HANDLE "NEXT" CLICK
     const handleNext = () => {
-        if (step < 3) {
+        if (!videoStarted) {
+            // Start Video
+            setVideoStarted(true);
+            videoRef.current.play();
+        } else if (step < 3) {
+            // Move to next slide (0->1, 1->2, 2->3) and Resume Video
             setStep(prev => prev + 1);
+            videoRef.current.play();
         } else {
+            // STEP 4: Play to End (Finish)
             setIsFinished(true);
+            videoRef.current.play(); // This plays past 32s to the end
         }
     };
 
     return (
-        <div className={`final-page theme-${data.tone ? data.tone.toLowerCase() : 'romantic'}`}>
+        <div className={`final-page theme-${toneKey}`}>
             {isFinished && <Confetti recycle={true} numberOfPieces={300} />}
 
-            {!isFinished && (
-                <CinematicBackground
-                    key={step}
-                    videoSrc={currentScene.video}
-                    imageSrc={currentScene.image}
-                    text={content.title}
-                    subText={content.subtitle}
-                    onNext={handleNext}
-                    data={data}
+            {/* 🎥 VIDEO (Remains visible even when finished for 'Play to End' effect) */}
+            <div className="video-background-container">
+                <video
+                    ref={videoRef}
+                    src={videoSrc}
+                    className="cinematic-video"
+                    playsInline
+                    muted={false}
+                    onTimeUpdate={handleTimeUpdate}
+                    preload="auto"
                 />
+                <div className={`video-overlay ${isFinished ? 'darker-overlay' : ''}`}></div>
+            </div>
+
+            {/* 📜 TEXT SLIDES (Hidden when finished) */}
+            {!isFinished && (
+                <div className="cinematic-content fade-in" onClick={handleNext}>
+                    {!videoStarted ? (
+                        <div className="start-prompt">
+                            <h1>For {data.partnerName} ❤️</h1>
+                            <p>(Tap to begin)</p>
+                        </div>
+                    ) : (
+                        <>
+                            <h1 className="cinematic-title">{content.title}</h1>
+                            <p className="cinematic-subtitle">{content.subtitle}</p>
+                            <div className="tap-instruction">(Tap to continue)</div>
+                        </>
+                    )}
+                </div>
             )}
 
+            {/* 💌 FINAL CARD (Appears at Step 4) */}
             {isFinished && (
                 <div className="overlay fade-in">
                     <div className="glass-card final-card">
@@ -139,17 +170,10 @@ export default function FinalLovePage() {
                             </div>
                         )}
 
-                        {data.pageType === 'confession' ? (
-                            <div className="action-buttons">
-                                <button className="yes-btn" onClick={() => alert("Make sure to call them!")}>YES! 💖</button>
-                                <button className="talk-btn">Let's Talk 💬</button>
-                            </div>
-                        ) : (
-                            <div className="signature">
-                                With all my love,<br />
-                                <strong>{data.showYourName ? data.yourName : "Your Secret Admirer"}</strong>
-                            </div>
-                        )}
+                        <div className="signature">
+                            With all my love,<br />
+                            <strong>{data.showYourName ? data.yourName : "Your Secret Admirer"}</strong>
+                        </div>
                     </div>
                 </div>
             )}

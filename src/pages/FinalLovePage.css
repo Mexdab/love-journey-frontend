@@ -1,132 +1,140 @@
-/* 1. Full Screen Layout */
-.final-page {
-    position: relative;
-    width: 100vw;
+/* ------------------------------------------------ */
+/* 🎬 1. THE SLIDES (Text during the video)        */
+/* ------------------------------------------------ */
+
+/* The container that holds the text */
+.cinematic-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
     height: 100vh;
-    overflow: hidden;
-    background: black;
-    color: white;
-    font-family: 'Playfair Display', serif;
-    /* Or your preferred font */
-}
-
-/* 2. Background Video */
-.video-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-}
-
-.bg-video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    /* Ensures video fills screen without stretching */
-}
-
-/* 3. The Overlay (Text) */
-.overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 10;
-    background: rgba(0, 0, 0, 0.4);
-    /* Darkens video slightly so text pops */
+    z-index: 5;
+    /* Above video, below final card */
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    backdrop-filter: blur(5px);
-    /* Optional: Blurs the paused video slightly */
-}
-
-/* 4. The Glass Card */
-.glass-card {
-    background: rgba(255, 255, 255, 0.15);
-    padding: 40px;
-    border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
     text-align: center;
+    padding: 20px;
+    cursor: pointer;
+}
+
+/* The Glass Box Effect for the Text Slides */
+.cinematic-title,
+.cinematic-subtitle,
+.start-prompt {
+    /* Glass Effect */
+    background: rgba(0, 0, 0, 0.25);
+    /* Subtle dark backing */
+    backdrop-filter: blur(4px);
+    /* Blurs video behind text */
+    padding: 20px 30px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+
+    /* Animation */
+    animation: fadeInUp 1s ease-out;
     max-width: 90%;
-    width: 400px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    margin: 10px 0;
 }
 
-.glass-card h1 {
+/* 🖋️ Title Typography (The Big Text) */
+.cinematic-title {
     font-size: 2.5rem;
-    margin-bottom: 16px;
+    font-weight: 700;
+    color: #ffffff;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    line-height: 1.2;
+    margin-bottom: 15px;
 }
 
-.glass-card p {
-    font-size: 1.2rem;
-    opacity: 0.9;
-    margin-bottom: 32px;
+/* 🖋️ Subtitle Typography (The Story) */
+.cinematic-subtitle {
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: #f0f0f0;
+    /* Slightly softer white */
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+    line-height: 1.6;
+    white-space: pre-line;
+    /* Allows \n to create new lines */
 }
 
-/* 5. Buttons */
-.play-btn {
-    background: white;
-    color: black;
-    border: none;
-    padding: 16px 32px;
-    font-size: 1.1rem;
-    border-radius: 50px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: transform 0.2s;
-}
-
-.play-btn:hover {
-    transform: scale(1.05);
-}
-
-.yes-btn {
-    background: #ff3e6c;
-    color: white;
-    border: none;
-    padding: 15px 30px;
-    font-size: 1.2rem;
-    border-radius: 50px;
-    margin-right: 10px;
-    cursor: pointer;
-}
-
-/* 6. Animations */
-.pulsing {
+/* The "Tap to continue" hint */
+.tap-instruction {
+    position: absolute;
+    bottom: 80px;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 1px;
+    text-transform: uppercase;
     animation: pulse 2s infinite;
 }
 
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
-    }
+/* ------------------------------------------------ */
+/* 🎨 2. THEME VARIATIONS (Dynamic Fonts)          */
+/* ------------------------------------------------ */
 
-    70% {
-        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
-    }
+/* 🌹 Romantic Theme */
+.theme-romantic .cinematic-title,
+.theme-romantic .glass-card h1 {
+    font-family: 'Playfair Display', serif;
+    color: #ffebd7;
+    /* Gold Tint */
 }
 
-.fade-in-up {
-    animation: fadeInUp 0.8s ease-out;
+/* 🎉 Playful Theme */
+.theme-playful .cinematic-title,
+.theme-playful .glass-card h1 {
+    font-family: 'Fredoka One', cursive;
+    /* or Poppins */
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
+/* 🌌 Deep Theme */
+.theme-deep .cinematic-title,
+.theme-deep .glass-card h1 {
+    font-family: 'Cinzel', serif;
+    /* or Montserrat */
+    letter-spacing: 3px;
+    font-weight: 400;
+}
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+/* 🧸 Cute Theme */
+.theme-cute .cinematic-title,
+.theme-cute .glass-card h1 {
+    font-family: 'Pacifico', cursive;
+    color: #ffcce0;
+    /* Pink Tint */
+    font-weight: 400;
+}
+
+/* ------------------------------------------------ */
+/* 🖼️ 3. FINAL CARD POLISH (Overrides)             */
+/* ------------------------------------------------ */
+
+.final-photo-container {
+    margin: 20px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 3px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.final-photo-preview {
+    width: 100%;
+    max-height: 250px;
+    object-fit: cover;
+    display: block;
+}
+
+.signature {
+    margin-top: 20px;
+    font-size: 1.1rem;
+    font-style: italic;
+    opacity: 0.9;
 }
