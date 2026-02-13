@@ -21,10 +21,7 @@ export default function FinalLovePage() {
     const [isFinished, setIsFinished] = useState(false);
     const [videoStarted, setVideoStarted] = useState(false);
 
-    // Controls the "Tap to Begin" and Story Slides
     const [showText, setShowText] = useState(true);
-
-    // Controls the Final Card Visibility
     const [showFinalCard, setShowFinalCard] = useState(false);
 
     // Fetch Data
@@ -46,24 +43,17 @@ export default function FinalLovePage() {
             });
     }, [slug]);
 
-    // 🔄 CARD LOOP LOGIC: Show for 5s, Hide for 5s, Repeat
+    // 🔄 CARD LOOP LOGIC
     useEffect(() => {
         if (isFinished) {
-            // Function to run the cycle
             const runCycle = () => {
-                setShowFinalCard(true); // Show Card
-
-                // After 5 seconds, hide it
+                setShowFinalCard(true);
                 setTimeout(() => {
                     setShowFinalCard(false);
                 }, 5000);
             };
-
-            runCycle(); // Run immediately once finished
-
-            // Repeat the cycle every 10 seconds (5s Show + 5s Hide)
+            runCycle();
             const interval = setInterval(runCycle, 10000);
-
             return () => clearInterval(interval);
         }
     }, [isFinished]);
@@ -71,21 +61,37 @@ export default function FinalLovePage() {
     if (loading) return <div className="loading-screen">❤️ Loading...</div>;
     if (error) return <div className="loading-screen">💔 Expired.</div>;
 
-    // Script Logic
+    // 📝 POLISHED SCRIPT LOGIC
     const getMessage = () => {
+        const partner = data.partnerName || "My Love";
+        const sender = data.yourName || "Me";
+
         if (data.pageType === 'confession') {
             return [
-                { title: `Hey ${data.partnerName}...`, subtitle: "I've been holding this back for a while." },
-                { title: "It all started...", subtitle: `"${data.feelingsStart}"` },
-                { title: "What I admire most...", subtitle: `Is your ${data.admireMost}.` },
+                // Slide 1
+                { title: `Dear ${partner},`, subtitle: "There’s something I’ve been meaning to tell you..." },
+                // Slide 2
+                { title: "It all began when...", subtitle: `"${data.feelingsStart}"` },
+                // Slide 3
+                { title: "What I admire most...", subtitle: `Is your ${data.admireMost}.\nIt makes you so special.` },
+                // Slide 4
                 { title: "And now...", subtitle: "I have just one question for you..." }
             ][step];
         } else {
+            // Relationship Flow
+            const feelings = data.feelings && data.feelings.length > 0
+                ? data.feelings.join(", ")
+                : "complete";
+
             return [
-                { title: `To ${data.partnerName}`, subtitle: `Celebrating our ${data.relationshipStatus} ✨` },
-                { title: "You make me feel...", subtitle: `So ${data.feelings ? data.feelings.join(", ") : "happy"} ❤️` },
+                // Slide 1
+                { title: `To My Dearest ${partner},`, subtitle: `Celebrating our beautiful journey of being\n✨ ${data.relationshipStatus} ✨` },
+                // Slide 2
+                { title: "You make me feel...", subtitle: `So ${feelings}.\n(And I cherish every moment ❤️)` },
+                // Slide 3
                 { title: "Remember this?", subtitle: `"${data.memoryText}"` },
-                { title: `I love ${data.appreciation}`, subtitle: `Can't wait for ${data.future}` }
+                // Slide 4
+                { title: `I love your ${data.appreciation}`, subtitle: `And I can't wait for our future:\n${data.future}` }
             ][step];
         }
     };
@@ -93,7 +99,7 @@ export default function FinalLovePage() {
     const content = getMessage() || {};
     const toneKey = data.tone ? data.tone.toLowerCase() : 'default';
 
-    // ⚡ PAUSE LOGIC (Visuals only)
+    // ⚡ PAUSE LOGIC
     const handleTimeUpdate = () => {
         if (!videoRef.current || isFinished) return;
 
@@ -112,24 +118,20 @@ export default function FinalLovePage() {
 
         if (!videoStarted) {
             setVideoStarted(true);
-
             videoRef.current.play();
             if (audioRef.current) {
                 audioRef.current.volume = 0.6;
                 audioRef.current.play().catch(e => console.log("Audio play failed:", e));
             }
-
         } else if (step < 3) {
             setStep(prev => prev + 1);
             videoRef.current.play();
         } else {
-            // 🎉 FINAL STEP
             setIsFinished(true);
-            videoRef.current.play(); // Keep looping background
+            videoRef.current.play();
         }
     };
 
-    // Dark overlay only when text or card is visible
     const isOverlayDark = showText || (isFinished && showFinalCard);
 
     return (
@@ -170,12 +172,18 @@ export default function FinalLovePage() {
                 </div>
             )}
 
-            {/* 💌 FINAL CARD (Appears & Vanishes in a cycle) */}
+            {/* 💌 FINAL CARD */}
             {isFinished && showFinalCard && (
                 <div className="final-layer">
                     <div className="glass-card">
                         <h1>{data.pageType === 'confession' ? "Will you?" : "Forever Us"}</h1>
-                        <p className="final-msg">{data.pageType === 'confession' ? data.theQuestion : data.future}</p>
+
+                        {/* Final Message Logic */}
+                        <p className="final-msg">
+                            {data.pageType === 'confession'
+                                ? data.theQuestion
+                                : `Here's to ${data.future} ❤️`}
+                        </p>
 
                         {data.photos && data.photos.length > 0 && (
                             <img src={data.photos[0].url} alt="Us" className="final-img" />
