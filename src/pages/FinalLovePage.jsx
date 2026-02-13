@@ -1,13 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import Confetti from "react-confetti";
+// ❌ REMOVED Confetti import
 import "./FinalLovePage.css";
 
+// 🎥 VISUALS (Muted)
 const MAIN_VIDEO_SOURCE = "/videos/romantic_full.mp4";
+
+// 🎵 MUSIC
+const MUSIC_SOURCE = "/music/bg.mp3";
 
 export default function FinalLovePage() {
     const { slug } = useParams();
     const videoRef = useRef(null);
+    const audioRef = useRef(null);
 
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -17,8 +22,11 @@ export default function FinalLovePage() {
     const [isFinished, setIsFinished] = useState(false);
     const [videoStarted, setVideoStarted] = useState(false);
 
-    // 🆕 CONTROLS VISIBILITY: Start true for the "Tap to Begin" screen
+    // Controls the "Tap to Begin" and Story Slides
     const [showText, setShowText] = useState(true);
+
+    // Controls the Final Card Visibility
+    const [showFinalCard, setShowFinalCard] = useState(false);
 
     // Fetch Data
     useEffect(() => {
@@ -38,6 +46,20 @@ export default function FinalLovePage() {
                 setLoading(false);
             });
     }, [slug]);
+
+    // ⏳ TIMER LOGIC: Hide the Final Card after 6 seconds
+    useEffect(() => {
+        if (isFinished) {
+            setShowFinalCard(true);
+
+            // Wait 6 seconds, then vanish the card
+            const timer = setTimeout(() => {
+                setShowFinalCard(false);
+            }, 6000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [isFinished]);
 
     if (loading) return <div className="loading-screen">❤️ Loading...</div>;
     if (error) return <div className="loading-screen">💔 Expired.</div>;
@@ -64,42 +86,50 @@ export default function FinalLovePage() {
     const content = getMessage() || {};
     const toneKey = data.tone ? data.tone.toLowerCase() : 'default';
 
-    // ⚡ PAUSE LOGIC
+    // ⚡ PAUSE LOGIC (Visuals only)
     const handleTimeUpdate = () => {
         if (!videoRef.current || isFinished) return;
 
         const currentTime = videoRef.current.currentTime;
         const targetTime = (step + 1) * 8;
 
-        // If we reached the 8s, 16s, 24s mark...
         if (currentTime >= targetTime && currentTime < targetTime + 0.3) {
             videoRef.current.pause();
-            // 🆕 SHOW THE TEXT NOW
             setShowText(true);
         }
     };
 
     // ⏭️ NEXT BUTTON LOGIC
     const handleNext = () => {
-        // 🆕 ALWAYS HIDE TEXT FIRST
         setShowText(false);
 
         if (!videoStarted) {
             setVideoStarted(true);
+
             videoRef.current.play();
+            if (audioRef.current) {
+                audioRef.current.volume = 0.6;
+                audioRef.current.play().catch(e => console.log("Audio play failed:", e));
+            }
+
         } else if (step < 3) {
             setStep(prev => prev + 1);
             videoRef.current.play();
         } else {
+            // 🎉 FINAL STEP
             setIsFinished(true);
-            // Optional: Play video to end or keep it paused
-            videoRef.current.play();
+            videoRef.current.play(); // Keep looping background
         }
     };
 
+    const isOverlayDark = showText || (isFinished && showFinalCard);
+
     return (
         <div className={`final-page theme-${toneKey}`}>
-            {isFinished && <Confetti recycle={true} numberOfPieces={300} />}
+
+            {/* ❌ REMOVED CONFETTI COMPONENT HERE */}
+
+            <audio ref={audioRef} src={MUSIC_SOURCE} loop />
 
             {/* Video Container */}
             <div className="video-wrapper">
@@ -108,14 +138,15 @@ export default function FinalLovePage() {
                     src={MAIN_VIDEO_SOURCE}
                     className="fullscreen-video"
                     playsInline
+                    muted={true}
+                    loop={true}
                     onTimeUpdate={handleTimeUpdate}
                     preload="auto"
                 />
-                {/* Overlay is darker only when text is showing */}
-                <div className={`video-overlay ${showText || isFinished ? 'dark-mode' : ''}`}></div>
+                <div className={`video-overlay ${isOverlayDark ? 'dark-mode' : ''}`}></div>
             </div>
 
-            {/* 📝 TEXT SLIDES (Only visible if showText is TRUE) */}
+            {/* 📝 TEXT SLIDES */}
             {!isFinished && showText && (
                 <div className="content-layer" onClick={handleNext}>
                     {!videoStarted ? (
@@ -134,7 +165,7 @@ export default function FinalLovePage() {
             )}
 
             {/* 💌 FINAL CARD */}
-            {isFinished && (
+            {isFinished && showFinalCard && (
                 <div className="final-layer">
                     <div className="glass-card">
                         <h1>{data.pageType === 'confession' ? "Will you?" : "Forever Us"}</h1>
