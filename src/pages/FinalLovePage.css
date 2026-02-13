@@ -1,4 +1,4 @@
-/* 🔒 FORCE FULL SCREEN (React Safe) */
+/* 🔒 FORCE FULL SCREEN */
 .final-page {
     position: fixed;
     top: 0;
@@ -8,7 +8,6 @@
     overflow: hidden;
     background: #000;
     z-index: 9999;
-    /* Ensures it sits on top of everything */
 }
 
 /* 🎥 VIDEO STYLING */
@@ -23,193 +22,25 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* This eliminates white bars/borders */
+    /* Eliminates borders/bars */
     display: block;
 }
 
+/* 🌑 OVERLAY LOGIC */
 .video-overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.3);
-    transition: background 1s ease;
+    background: rgba(0, 0, 0, 0);
+    /* Transparent when video plays */
+    transition: background 0.5s ease;
 }
 
+/* Darken screen slightly when text appears */
 .dark-mode {
-    background: rgba(0, 0, 0, 0.7);
-}
-
-/* 📝 TEXT CONTENT LAYER */
-.content-layer {
-    position: absolute;
-    z-index: 10;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-}
-
-/* 💎 GLASS BOX (The text container) */
-.glass-box {
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 30px;
-    border-radius: 20px;
-    text-align: center;
-    max-width: 85%;
-
-    /* ✨ THE FIX: FADE IN ONLY (No translate/movement) */
-    animation: fadeIn 0.8s ease-out;
-}
-
-.cinematic-title {
-    color: white;
-    font-size: 2rem;
-    margin-bottom: 10px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.cinematic-subtitle {
-    color: #eee;
-    font-size: 1.2rem;
-    white-space: pre-line;
-}
-
-.tap-hint {
-    margin-top: 20px;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    opacity: 0.7;
-    animation: pulse 1.5s infinite;
-}
-
-/* 💌 FINAL CARD LAYER */
-.final-layer {
-    position: absolute;
-    z-index: 20;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.glass-card {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(12px);
-    padding: 30px;
-    border-radius: 20px;
-    text-align: center;
-    color: white;
-    width: 90%;
-    max-width: 400px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-
-    /* ✨ FIX: FADE IN ONLY */
-    animation: fadeIn 1.5s ease-out;
-}
-
-.final-img {
-    width: 100%;
-    height: 250px;
-    object-fit: cover;
-    border-radius: 10px;
-    margin: 15px 0;
-    border: 2px solid rgba(255, 255, 255, 0.5);
-}
-
-.sign-off {
-    font-family: cursive;
-    margin-top: 15px;
-    font-size: 1.2rem;
-}
-
-/* ✨ ANIMATIONS (Pure Opacity, No Movement) */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes pulse {
-    0% {
-        opacity: 0.5;
-    }
-
-    50% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 0.5;
-    }
-}
-
-/* 🎨 THEMES */
-.theme-romantic .cinematic-title {
-    font-family: 'Playfair Display', serif;
-    color: #ffebd7;
-}
-
-.theme-playful .cinematic-title {
-    font-family: 'Comic Neue', cursive;
-}
-
-.theme-modern .cinematic-title {
-    font-family: 'Montserrat', sans-serif;
-    letter-spacing: 2px;
-}
-
-/* 🔒 FORCE FULL SCREEN (React Safe) */
-.final-page {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    background: #000;
-    z-index: 9999;
-    /* Ensures it sits on top of everything */
-}
-
-/* 🎥 VIDEO STYLING */
-.video-wrapper {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-}
-
-.fullscreen-video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    /* This eliminates white bars/borders */
-    display: block;
-}
-
-.video-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.3);
-    transition: background 1s ease;
-}
-
-.dark-mode {
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.5);
 }
 
 /* 📝 TEXT CONTENT LAYER */

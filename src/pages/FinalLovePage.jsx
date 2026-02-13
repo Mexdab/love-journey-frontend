@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import Confetti from "react-confetti";
-import "./FinalLovePage.css"; // Imports the CSS below
+import "./FinalLovePage.css";
 
 const MAIN_VIDEO_SOURCE = "/videos/romantic_full.mp4";
 
@@ -16,6 +16,9 @@ export default function FinalLovePage() {
     const [step, setStep] = useState(0);
     const [isFinished, setIsFinished] = useState(false);
     const [videoStarted, setVideoStarted] = useState(false);
+
+    // 🆕 CONTROLS VISIBILITY: Start true for the "Tap to Begin" screen
+    const [showText, setShowText] = useState(true);
 
     // Fetch Data
     useEffect(() => {
@@ -61,17 +64,26 @@ export default function FinalLovePage() {
     const content = getMessage() || {};
     const toneKey = data.tone ? data.tone.toLowerCase() : 'default';
 
-    // Pause Logic (every 8 seconds)
+    // ⚡ PAUSE LOGIC
     const handleTimeUpdate = () => {
         if (!videoRef.current || isFinished) return;
+
         const currentTime = videoRef.current.currentTime;
         const targetTime = (step + 1) * 8;
+
+        // If we reached the 8s, 16s, 24s mark...
         if (currentTime >= targetTime && currentTime < targetTime + 0.3) {
             videoRef.current.pause();
+            // 🆕 SHOW THE TEXT NOW
+            setShowText(true);
         }
     };
 
+    // ⏭️ NEXT BUTTON LOGIC
     const handleNext = () => {
+        // 🆕 ALWAYS HIDE TEXT FIRST
+        setShowText(false);
+
         if (!videoStarted) {
             setVideoStarted(true);
             videoRef.current.play();
@@ -80,12 +92,12 @@ export default function FinalLovePage() {
             videoRef.current.play();
         } else {
             setIsFinished(true);
+            // Optional: Play video to end or keep it paused
             videoRef.current.play();
         }
     };
 
     return (
-        // "final-page" class handles the Full Screen logic in CSS
         <div className={`final-page theme-${toneKey}`}>
             {isFinished && <Confetti recycle={true} numberOfPieces={300} />}
 
@@ -99,11 +111,12 @@ export default function FinalLovePage() {
                     onTimeUpdate={handleTimeUpdate}
                     preload="auto"
                 />
-                <div className={`video-overlay ${isFinished ? 'dark-mode' : ''}`}></div>
+                {/* Overlay is darker only when text is showing */}
+                <div className={`video-overlay ${showText || isFinished ? 'dark-mode' : ''}`}></div>
             </div>
 
-            {/* Text Slides */}
-            {!isFinished && (
+            {/* 📝 TEXT SLIDES (Only visible if showText is TRUE) */}
+            {!isFinished && showText && (
                 <div className="content-layer" onClick={handleNext}>
                     {!videoStarted ? (
                         <div className="glass-box">
@@ -111,7 +124,6 @@ export default function FinalLovePage() {
                             <p>(Tap to begin)</p>
                         </div>
                     ) : (
-                        // Added key={step} to trigger animation restart on change
                         <div className="glass-box" key={step}>
                             <h1 className="cinematic-title">{content.title}</h1>
                             <p className="cinematic-subtitle">{content.subtitle}</p>
@@ -121,7 +133,7 @@ export default function FinalLovePage() {
                 </div>
             )}
 
-            {/* Final Card */}
+            {/* 💌 FINAL CARD */}
             {isFinished && (
                 <div className="final-layer">
                     <div className="glass-card">
