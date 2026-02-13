@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import "./FinalLovePage.css";
 
-// 🎥 VISUALS (Muted)
+// 🎥 VISUALS
 const MAIN_VIDEO_SOURCE = "/videos/romantic_full.mp4";
 
 // 🎵 MUSIC
@@ -24,7 +24,7 @@ export default function FinalLovePage() {
     const [showText, setShowText] = useState(true);
     const [showFinalCard, setShowFinalCard] = useState(false);
 
-    // Fetch Data
+    // Fetch Data from Backend
     useEffect(() => {
         const API_BASE_URL = "https://love-journey-backend-eqyf.onrender.com";
         fetch(`${API_BASE_URL}/api/love/${slug}`)
@@ -43,29 +43,11 @@ export default function FinalLovePage() {
             });
     }, [slug]);
 
-    // ✨ NEW: Full Experience Reset Logic
-    // This resets the cards to Step 0 when the video loops back to the start
-    const handleVideoLoop = () => {
-        if (isFinished) {
-            setStep(0);
-            setIsFinished(false);
-            setShowText(true);
-            setShowFinalCard(false);
-        }
-    };
-
-    // Card visibility logic for the end of the sequence
-    useEffect(() => {
-        if (isFinished) {
-            setShowFinalCard(true);
-        }
-    }, [isFinished]);
-
-    if (loading) return <div className="loading-screen">❤️ Loading...</div>;
-    if (error) return <div className="loading-screen">💔 Expired.</div>;
-
+    // Script Text Logic
     const getMessage = () => {
+        if (!data) return {};
         const partner = data.partnerName || "My Love";
+
         if (data.pageType === 'confession') {
             let nervousIntro = "I've been hiding this for a while.";
             const level = data.nervousLevel ? data.nervousLevel.toLowerCase() : "";
@@ -96,43 +78,66 @@ export default function FinalLovePage() {
         }
     };
 
-    const content = getMessage() || {};
-    const toneKey = data.tone ? data.tone.toLowerCase() : 'default';
-
+    // ⚡ SYNC LOGIC: Detects pauses and loops
     const handleTimeUpdate = () => {
-        if (!videoRef.current || isFinished) return;
-        const currentTime = videoRef.current.currentTime;
+        const video = videoRef.current;
+        if (!video) return;
+
+        const currentTime = video.currentTime;
+
+        // 🔄 1. DETECT FULL LOOP RESTART
+        // If the video finishes and jumps back to start, reset the UI
+        if (isFinished && currentTime < 0.5) {
+            setStep(0);
+            setIsFinished(false);
+            setShowText(true);
+            setShowFinalCard(false);
+        }
+
+        // 🛑 2. PAUSE LOGIC FOR STEPS
+        // Pause at 8s, 16s, 24s, 32s marks
+        if (isFinished) return;
         const targetTime = (step + 1) * 8;
 
-        if (currentTime >= targetTime && currentTime < targetTime + 0.3) {
-            videoRef.current.pause();
+        if (currentTime >= targetTime && currentTime < targetTime + 0.5 && !showText) {
+            video.pause();
             setShowText(true);
         }
     };
 
+    // ⏭️ NEXT BUTTON / TAP LOGIC
     const handleNext = () => {
         setShowText(false);
+
         if (!videoStarted) {
             setVideoStarted(true);
             videoRef.current.play();
             if (audioRef.current) {
                 audioRef.current.volume = 0.6;
-                audioRef.current.play().catch(e => console.log("Audio play failed:", e));
+                audioRef.current.play().catch(e => console.log("Audio failed:", e));
             }
         } else if (step < 3) {
             setStep(prev => prev + 1);
             videoRef.current.play();
         } else {
+            // 🎉 FINAL STEP REACHED
             setIsFinished(true);
+            setShowFinalCard(true);
             videoRef.current.play();
         }
     };
 
+    if (loading) return <div className="loading-screen">❤️ Loading...</div>;
+    if (error) return <div className="loading-screen">💔 Expired.</div>;
+
+    const content = getMessage() || {};
+    const toneKey = data.tone ? data.tone.toLowerCase() : 'default';
     const isOverlayDark = showText || (isFinished && showFinalCard);
 
     return (
         <div className={`final-page theme-${toneKey}`}>
             <audio ref={audioRef} src={MUSIC_SOURCE} loop />
+
             <div className="video-wrapper">
                 <video
                     ref={videoRef}
@@ -142,12 +147,12 @@ export default function FinalLovePage() {
                     muted={true}
                     loop={true}
                     onTimeUpdate={handleTimeUpdate}
-                    onPlay={handleVideoLoop} // ✨ RESETS EVERYTHING ON LOOP
                     preload="auto"
                 />
                 <div className={`video-overlay ${isOverlayDark ? 'dark-mode' : ''}`}></div>
             </div>
 
+            {/* 📝 STORY SLIDES */}
             {!isFinished && showText && (
                 <div className="content-layer" onClick={handleNext}>
                     {!videoStarted ? (
@@ -165,6 +170,7 @@ export default function FinalLovePage() {
                 </div>
             )}
 
+            {/* 💌 FINAL CARD */}
             {isFinished && showFinalCard && (
                 <div className="final-layer">
                     <div className="glass-card">
