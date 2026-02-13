@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './PreviewPage.css';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+// 🛠️ FIX 1: Point directly to Render (No more Localhost)
+const API_BASE_URL = "https://love-journey-backend-eqyf.onrender.com";
 
 const PreviewPage = () => {
     const location = useLocation();
@@ -81,8 +82,9 @@ const PreviewPage = () => {
             if (!orderRes.ok) throw new Error("Order creation failed");
             const orderData = await orderRes.json();
 
+            // 🛠️ FIX 2: Use the Environment Variable for the Key (or paste your rzp_live_ key here)
             const options = {
-                key: "rzp_test_SDYaQBefqfrEJH",
+                key: import.meta.env.VITE_RAZORPAY_KEY_ID, // Ensure this is set in Vercel!
                 amount: orderData.order.amount,
                 currency: orderData.order.currency,
                 name: "Love Journey",
@@ -138,7 +140,7 @@ const PreviewPage = () => {
     return (
         <div className={`preview-page theme-${theme.toLowerCase()}`}>
             <div className="payment-banner">
-                🔒 Preview Mode. Pay ₹20 to unlock the full cinematic experience.
+                🔒 Preview Mode. Pay ₹10 to unlock the full cinematic experience.
             </div>
 
             <div className="preview-container">
