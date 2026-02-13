@@ -1,5 +1,5 @@
 import React from 'react';
-import './Policies.css';
+import './policies.css';
 
 /**
  * A shared layout for all legal and policy pages
