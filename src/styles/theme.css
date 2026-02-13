@@ -1,0 +1,310 @@
+/* =========================================
+   GLOBAL THEME & UTILITIES
+   ========================================= */
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: black;
+  color: white;
+  overflow-x: hidden;
+}
+
+/* Scene Wrapper */
+.scene-wrapper {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #000;
+}
+
+/* Centering Utility */
+.center {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+}
+
+/* =========================================
+     GLASSMORPHISM CONTAINERS
+     ========================================= */
+
+.glass-box {
+  position: relative;
+  z-index: 2;
+  width: min(680px, 92vw);
+  padding: 48px 40px;
+  border-radius: 32px;
+
+  /* ULTRA PREMIUM GLASS EFFECT - EXTRA CLEAR */
+  background: rgba(255, 255, 255, 0.01);
+  /* Almost transparent */
+  backdrop-filter: blur(8px) saturate(180%);
+  /* Low blur to see video */
+  -webkit-backdrop-filter: blur(8px) saturate(180%);
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+
+  text-align: center;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.glass-box:hover {
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.5),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* =========================================
+     TYPOGRAPHY & TITLES
+     ========================================= */
+
+.main-title {
+  font-family: "Playfair Display", serif;
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: -0.5px;
+  margin-bottom: 32px;
+  line-height: 1.2;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+h2 {
+  font-family: "Playfair Display", serif;
+  font-size: 28px;
+  font-weight: 500;
+  margin-bottom: 24px;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+p,
+.subtitle {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+/* =========================================
+     PREMIUM BUTTONS
+     ========================================= */
+
+.glow-btn {
+  position: relative;
+  background: linear-gradient(135deg, #d00000, #e63946);
+  /* Premium Red */
+  border: none;
+  padding: 16px 42px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0 10px 30px rgba(208, 0, 0, 0.35);
+  overflow: hidden;
+  letter-spacing: 0.5px;
+}
+
+.glow-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transform: translateX(-100%);
+  transition: 0.5s;
+}
+
+.glow-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(208, 0, 0, 0.55);
+}
+
+.glow-btn:hover::after {
+  transform: translateX(100%);
+}
+
+.glow-btn:disabled {
+  background: #444;
+  cursor: not-allowed;
+  opacity: 0.6;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Secondary / Nav Buttons */
+.nav-btn {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px 24px;
+  border-radius: 999px;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.nav-btn:hover {
+  color: white;
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* =========================================
+     INPUTS & FORMS
+     ========================================= */
+
+.input-group {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto 24px;
+}
+
+.premium-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 18px 24px;
+  font-size: 16px;
+  color: white;
+  border-radius: 16px;
+  outline: none;
+  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.premium-input:focus {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 126, 95, 0.5);
+  box-shadow: 0 0 0 4px rgba(255, 126, 95, 0.1);
+}
+
+.premium-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Option Grid (Chips) */
+.option-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.option-chip {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px 20px;
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.option-chip:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.option-chip.active {
+  background: linear-gradient(135deg, #ff3e6c, #ff7e5f);
+  border-color: transparent;
+  color: white;
+  box-shadow: 0 8px 20px rgba(255, 62, 108, 0.25);
+}
+
+/* =========================================
+     ANIMATIONS
+     ========================================= */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.delay-1 {
+  animation-delay: 0.1s;
+}
+
+.delay-2 {
+  animation-delay: 0.2s;
+}
+
+.delay-3 {
+  animation-delay: 0.3s;
+}
+
+/* =========================================
+     COMPONENT SPECIFIC
+     ========================================= */
+
+/* Gender Switch */
+.gender-switch {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* Progress Bar */
+.progress-container {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  margin-bottom: 32px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #ff3e6c, #ff7e5f);
+  transition: width 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.bottom-text {
+  position: fixed;
+  bottom: 40px;
+  width: 100%;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  letter-spacing: 1px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.scene-center {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+
+  display: grid;
+  place-items: center;
+}

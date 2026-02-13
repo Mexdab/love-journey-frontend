@@ -1,0 +1,132 @@
+/* 1. Full Screen Layout */
+.final-page {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: black;
+    color: white;
+    font-family: 'Playfair Display', serif;
+    /* Or your preferred font */
+}
+
+/* 2. Background Video */
+.video-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.bg-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Ensures video fills screen without stretching */
+}
+
+/* 3. The Overlay (Text) */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.4);
+    /* Darkens video slightly so text pops */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+    /* Optional: Blurs the paused video slightly */
+}
+
+/* 4. The Glass Card */
+.glass-card {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 40px;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    text-align: center;
+    max-width: 90%;
+    width: 400px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card h1 {
+    font-size: 2.5rem;
+    margin-bottom: 16px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.glass-card p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 32px;
+}
+
+/* 5. Buttons */
+.play-btn {
+    background: white;
+    color: black;
+    border: none;
+    padding: 16px 32px;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.2s;
+}
+
+.play-btn:hover {
+    transform: scale(1.05);
+}
+
+.yes-btn {
+    background: #ff3e6c;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    border-radius: 50px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+/* 6. Animations */
+.pulsing {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
