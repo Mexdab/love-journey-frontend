@@ -1,0 +1,53 @@
+.policies-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    color: #333;
+    line-height: 1.6;
+    background: #fff;
+    min-height: 100vh;
+}
+
+.policies-container h1 {
+    font-size: 2.5rem;
+    color: #e11d48;
+    /* Matching your Love Theme Red */
+    margin-bottom: 20px;
+    text-align: center;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 15px;
+}
+
+.policies-container h2 {
+    font-size: 1.5rem;
+    color: #444;
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+.policies-container p,
+.policies-container li {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.policies-container ul {
+    padding-left: 20px;
+    margin-bottom: 20px;
+}
+
+.back-home-btn {
+    display: inline-block;
+    margin-bottom: 30px;
+    text-decoration: none;
+    color: #e11d48;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+.back-home-btn:hover {
+    text-decoration: underline;
+}
