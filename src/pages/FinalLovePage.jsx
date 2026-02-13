@@ -4,7 +4,7 @@ import Confetti from "react-confetti";
 import CinematicBackground from "../components/CinematicBackground";
 import "./FinalLovePage.css";
 
-// 🗺️ VIDEO ASSET MAP (Must match your public/videos/ folder EXACTLY)
+// 🗺️ VIDEO ASSET MAP 
 const VIDEO_ASSETS = {
     romantic: [
         { video: "/videos/romantic_1_intro.mp4", image: "/videos/romantic_1_end.png" },
@@ -30,7 +30,6 @@ export default function FinalLovePage() {
 
     // 1. FETCH DATA FROM REAL BACKEND 🌍
     useEffect(() => {
-        // ✅ LIVE FIX: Using Vercel Env Var or direct Render URL
         const API_BASE_URL = import.meta.env.VITE_API_URL || "https://love-journey-backend-eqyf.onrender.com";
 
         fetch(`${API_BASE_URL}/api/love/${slug}`)
@@ -49,15 +48,29 @@ export default function FinalLovePage() {
             });
     }, [slug]);
 
+    // ⚡ 2. THE SMOOTH-TRANSITION PRELOADER 
+    useEffect(() => {
+        if (data) {
+            const toneKey = data.tone ? data.tone.toLowerCase() : 'default';
+            const themeAssets = VIDEO_ASSETS[toneKey] || VIDEO_ASSETS.default;
+
+            themeAssets.forEach((asset) => {
+                const videoTrigger = document.createElement("video");
+                videoTrigger.src = asset.video;
+                videoTrigger.preload = "auto"; // Forces the browser to cache the file
+            });
+        }
+    }, [data]);
+
     if (loading) return <div className="loading-screen">❤️ Loading your story...</div>;
     if (error) return <div className="loading-screen">💔 Story not found or expired.</div>;
 
-    // 2. GET CURRENT ASSETS
+    // 3. GET CURRENT ASSETS
     const toneKey = data.tone ? data.tone.toLowerCase() : 'default';
     const themeAssets = VIDEO_ASSETS[toneKey] || VIDEO_ASSETS.default;
     const currentScene = themeAssets[step] || themeAssets[themeAssets.length - 1];
 
-    // 3. GENERATE TEXT CONTENT
+    // 4. GENERATE TEXT CONTENT
     const getMessage = () => {
         if (data.pageType === 'confession') {
             const texts = [
