@@ -43,55 +43,55 @@ export default function FinalLovePage() {
             });
     }, [slug]);
 
-    // 🔄 CARD LOOP LOGIC
+    // ✨ NEW: Full Experience Reset Logic
+    // This resets the cards to Step 0 when the video loops back to the start
+    const handleVideoLoop = () => {
+        if (isFinished) {
+            setStep(0);
+            setIsFinished(false);
+            setShowText(true);
+            setShowFinalCard(false);
+        }
+    };
+
+    // Card visibility logic for the end of the sequence
     useEffect(() => {
         if (isFinished) {
-            const runCycle = () => {
-                setShowFinalCard(true);
-                setTimeout(() => {
-                    setShowFinalCard(false);
-                }, 5000);
-            };
-            runCycle();
-            const interval = setInterval(runCycle, 10000);
-            return () => clearInterval(interval);
+            setShowFinalCard(true);
         }
     }, [isFinished]);
 
     if (loading) return <div className="loading-screen">❤️ Loading...</div>;
     if (error) return <div className="loading-screen">💔 Expired.</div>;
 
-    // 📝 POLISHED SCRIPT LOGIC
     const getMessage = () => {
         const partner = data.partnerName || "My Love";
-        const sender = data.yourName || "Me";
-
         if (data.pageType === 'confession') {
+            let nervousIntro = "I've been hiding this for a while.";
+            const level = data.nervousLevel ? data.nervousLevel.toLowerCase() : "";
+            if (level.includes("terrified")) nervousIntro = "Honestly? I'm terrified to say this... 😰";
+            else if (level.includes("racing")) nervousIntro = "My heart is racing right now... 💓";
+            else if (level.includes("very")) nervousIntro = "I'm really nervous, but I have to say it.";
+
             return [
-                // Slide 1
-                { title: `Dear ${partner},`, subtitle: "There’s something I’ve been meaning to tell you..." },
-                // Slide 2
-                { title: "It all began when...", subtitle: `"${data.feelingsStart}"` },
-                // Slide 3
-                { title: "What I admire most...", subtitle: `Is your ${data.admireMost}.\nIt makes you so special.` },
-                // Slide 4
-                { title: "And now...", subtitle: "I have just one question for you..." }
+                { title: `Hey ${partner}...`, subtitle: nervousIntro },
+                { title: "It all started when...", subtitle: `"${data.feelingsStart}"` },
+                { title: "I can't stop thinking about...", subtitle: `Your ${data.admireMost}.\nIt makes you so special to me.` },
+                { title: "And now...", subtitle: "I have something important to ask..." }
             ][step];
         } else {
-            // Relationship Flow
-            const feelings = data.feelings && data.feelings.length > 0
-                ? data.feelings.join(", ")
-                : "complete";
-
+            let feelingsText = "happy";
+            if (data.feelings && data.feelings.length > 0) {
+                const f = data.feelings;
+                if (f.length === 1) feelingsText = f[0];
+                else if (f.length === 2) feelingsText = `${f[0]} and ${f[1]}`;
+                else feelingsText = `${f.slice(0, -1).join(", ")}, and ${f[f.length - 1]}`;
+            }
             return [
-                // Slide 1
                 { title: `To My Dearest ${partner},`, subtitle: `Celebrating our beautiful journey of being\n✨ ${data.relationshipStatus} ✨` },
-                // Slide 2
-                { title: "You make me feel...", subtitle: `So ${feelings}.\n(And I cherish every moment ❤️)` },
-                // Slide 3
-                { title: "Remember this?", subtitle: `"${data.memoryText}"` },
-                // Slide 4
-                { title: `I love your ${data.appreciation}`, subtitle: `And I can't wait for our future:\n${data.future}` }
+                { title: "You make me feel...", subtitle: `So ${feelingsText}.\n(And I cherish every moment ❤️)` },
+                { title: `I'll never forget our ${data.memoryType || "special memories"}...`, subtitle: `"${data.memoryText}"` },
+                { title: `I love your ${data.appreciation}`, subtitle: `And I'm dreaming of ${data.future} with you.` }
             ][step];
         }
     };
@@ -99,10 +99,8 @@ export default function FinalLovePage() {
     const content = getMessage() || {};
     const toneKey = data.tone ? data.tone.toLowerCase() : 'default';
 
-    // ⚡ PAUSE LOGIC
     const handleTimeUpdate = () => {
         if (!videoRef.current || isFinished) return;
-
         const currentTime = videoRef.current.currentTime;
         const targetTime = (step + 1) * 8;
 
@@ -112,10 +110,8 @@ export default function FinalLovePage() {
         }
     };
 
-    // ⏭️ NEXT BUTTON LOGIC
     const handleNext = () => {
         setShowText(false);
-
         if (!videoStarted) {
             setVideoStarted(true);
             videoRef.current.play();
@@ -136,10 +132,7 @@ export default function FinalLovePage() {
 
     return (
         <div className={`final-page theme-${toneKey}`}>
-
             <audio ref={audioRef} src={MUSIC_SOURCE} loop />
-
-            {/* Video Container */}
             <div className="video-wrapper">
                 <video
                     ref={videoRef}
@@ -149,12 +142,12 @@ export default function FinalLovePage() {
                     muted={true}
                     loop={true}
                     onTimeUpdate={handleTimeUpdate}
+                    onPlay={handleVideoLoop} // ✨ RESETS EVERYTHING ON LOOP
                     preload="auto"
                 />
                 <div className={`video-overlay ${isOverlayDark ? 'dark-mode' : ''}`}></div>
             </div>
 
-            {/* 📝 TEXT SLIDES */}
             {!isFinished && showText && (
                 <div className="content-layer" onClick={handleNext}>
                     {!videoStarted ? (
@@ -172,23 +165,16 @@ export default function FinalLovePage() {
                 </div>
             )}
 
-            {/* 💌 FINAL CARD */}
             {isFinished && showFinalCard && (
                 <div className="final-layer">
                     <div className="glass-card">
-                        <h1>{data.pageType === 'confession' ? "Will you?" : "Forever Us"}</h1>
-
-                        {/* Final Message Logic */}
+                        <h1>{data.pageType === 'confession' ? "My Confession" : "Forever Us"}</h1>
                         <p className="final-msg">
-                            {data.pageType === 'confession'
-                                ? data.theQuestion
-                                : `Here's to ${data.future} ❤️`}
+                            {data.pageType === 'confession' ? data.theQuestion : `Here's to ${data.future} ❤️`}
                         </p>
-
                         {data.photos && data.photos.length > 0 && (
                             <img src={data.photos[0].url} alt="Us" className="final-img" />
                         )}
-
                         <div className="sign-off">Love, {data.yourName}</div>
                     </div>
                 </div>
