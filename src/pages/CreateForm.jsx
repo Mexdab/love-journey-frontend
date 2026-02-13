@@ -1,44 +1,62 @@
-import { useState } from "react";
+import React, { useState } from "react"; // Explicit import to prevent Vercel build errors
 import { useNavigate } from "react-router-dom";
 
 export default function CreateForm() {
   const nav = useNavigate();
 
+  // 🔄 Simplified state without the photos array
   const [data, setData] = useState({
-    relationship: "",
+    relationship: "Dating",
     yourName: "",
     partnerName: "",
   });
 
   const handleNext = () => {
+    // 🚀 Navigates to preview with just text data
     nav("/preview", { state: data });
   };
 
   return (
     <div className="center">
-      <h2>Step 1</h2>
+      <h2>Step 1: The Basics</h2>
 
-      <select
-        onChange={(e) => setData({ ...data, relationship: e.target.value })}
-      >
-        <option>Dating</option>
-        <option>In a relationship</option>
-        <option>Engaged</option>
-        <option>Married</option>
-        <option>It’s complicated 😅</option>
-      </select>
+      <div className="form-group">
+        <label>Your Relationship</label>
+        <select
+          value={data.relationship}
+          onChange={(e) => setData({ ...data, relationship: e.target.value })}
+        >
+          <option value="Dating">Dating</option>
+          <option value="In a relationship">In a relationship</option>
+          <option value="Engaged">Engaged</option>
+          <option value="Married">Married</option>
+          <option value="It’s complicated 😅">It’s complicated 😅</option>
+        </select>
+      </div>
 
-      <input
-        placeholder="Your Name"
-        onChange={(e) => setData({ ...data, yourName: e.target.value })}
-      />
+      <div className="form-group">
+        <input
+          type="text"
+          placeholder="Your Name"
+          value={data.yourName}
+          onChange={(e) => setData({ ...data, yourName: e.target.value })}
+          required
+        />
+      </div>
 
-      <input
-        placeholder="Partner Name"
-        onChange={(e) => setData({ ...data, partnerName: e.target.value })}
-      />
+      <div className="form-group">
+        <input
+          type="text"
+          placeholder="Partner Name"
+          value={data.partnerName}
+          onChange={(e) => setData({ ...data, partnerName: e.target.value })}
+          required
+        />
+      </div>
 
-      <button onClick={handleNext}>Continue</button>
+      <button className="submit-btn" onClick={handleNext}>
+        Continue to Preview
+      </button>
     </div>
   );
 }

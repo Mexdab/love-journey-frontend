@@ -15,13 +15,12 @@ const PreviewPage = () => {
     const [isProcessing, setIsProcessing] = useState(false);
     const [statusMessage, setStatusMessage] = useState("");
 
-    // 2. Destructure for Preview Display
+    // 2. Destructure for Preview Display (photos removed)
     const {
         yourName = "Admirer",
         partnerName = "My Love",
         pageType = "relationship",
         theme = "romantic",
-        photos = [],
         feelingsStart,
         admireMost,
         theQuestion,
@@ -32,47 +31,17 @@ const PreviewPage = () => {
         appreciationCustom
     } = formDataRaw;
 
-    // Helper to upload images to Cloudinary via your backend
-    const uploadImagesToBackend = async (imageFiles) => {
-        if (!imageFiles || imageFiles.length === 0) return [];
-        const uploadData = new FormData();
-        const filesArray = Array.isArray(imageFiles) ? imageFiles : [imageFiles];
-        filesArray.forEach(file => uploadData.append('photos', file));
-
-        const res = await fetch(`${API_BASE_URL}/api/love/upload-images`, {
-            method: 'POST',
-            body: uploadData
-        });
-
-        if (!res.ok) throw new Error("Image upload failed");
-        const data = await res.json();
-        return data.photos;
-    };
-
-    // 🚀 NEW: Direct Creation Function (No Razorpay)
+    // 🚀 NEW: Direct Creation Function (No Photos/No Razorpay)
     const handleCreate = async () => {
         setIsProcessing(true);
-        setStatusMessage("Uploading your memories... 📸");
+        setStatusMessage("Creating your Cinematic Journey... ✨");
 
         try {
-            // A. Upload photos first
-            let uploadedPhotos = [];
-            if (photos && photos.length > 0) {
-                uploadedPhotos = await uploadImagesToBackend(photos);
-            }
-
-            setStatusMessage("Creating your Cinematic Journey... ✨");
-
-            // B. Send all data to the backend 'create-page' route
-            const payload = {
-                ...formDataRaw,
-                photos: uploadedPhotos
-            };
-
+            // Send all data directly to the backend 'create-page' route
             const response = await fetch(`${API_BASE_URL}/api/love/create-page`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(formDataRaw)
             });
 
             const result = await response.json();
@@ -125,7 +94,7 @@ const PreviewPage = () => {
                 ) : (
                     <>
                         <div className="story-section">
-                            <div className="section-icon">📸</div>
+                            <div className="section-icon">💭</div>
                             <h3 className="section-title">A Special {memoryType}</h3>
                             <div className="section-content">{memoryText}</div>
                         </div>
@@ -148,7 +117,6 @@ const PreviewPage = () => {
                     <button className="action-btn edit-btn" onClick={() => navigate(-1)} disabled={isProcessing}>
                         ← Edit Details
                     </button>
-                    {/* Updated Button to call handleCreate */}
                     <button className="action-btn payment-btn" onClick={handleCreate} disabled={isProcessing}>
                         {isProcessing ? statusMessage : "Create My Love Page 💖"}
                     </button>
