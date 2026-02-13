@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Confetti from "react-confetti";
 import { motion } from "framer-motion";
-import "./PaymentSuccessPage.css"; // We will create this CSS below
+import "./SuccessPage.css"; // We will create this CSS below
 
 export default function PaymentSuccessPage() {
     const location = useLocation();
