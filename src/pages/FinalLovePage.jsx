@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-// ❌ REMOVED Confetti import
 import "./FinalLovePage.css";
 
 // 🎥 VISUALS (Muted)
@@ -47,17 +46,25 @@ export default function FinalLovePage() {
             });
     }, [slug]);
 
-    // ⏳ TIMER LOGIC: Hide the Final Card after 6 seconds
+    // 🔄 CARD LOOP LOGIC: Show for 5s, Hide for 5s, Repeat
     useEffect(() => {
         if (isFinished) {
-            setShowFinalCard(true);
+            // Function to run the cycle
+            const runCycle = () => {
+                setShowFinalCard(true); // Show Card
 
-            // Wait 6 seconds, then vanish the card
-            const timer = setTimeout(() => {
-                setShowFinalCard(false);
-            }, 6000);
+                // After 5 seconds, hide it
+                setTimeout(() => {
+                    setShowFinalCard(false);
+                }, 5000);
+            };
 
-            return () => clearTimeout(timer);
+            runCycle(); // Run immediately once finished
+
+            // Repeat the cycle every 10 seconds (5s Show + 5s Hide)
+            const interval = setInterval(runCycle, 10000);
+
+            return () => clearInterval(interval);
         }
     }, [isFinished]);
 
@@ -122,12 +129,11 @@ export default function FinalLovePage() {
         }
     };
 
+    // Dark overlay only when text or card is visible
     const isOverlayDark = showText || (isFinished && showFinalCard);
 
     return (
         <div className={`final-page theme-${toneKey}`}>
-
-            {/* ❌ REMOVED CONFETTI COMPONENT HERE */}
 
             <audio ref={audioRef} src={MUSIC_SOURCE} loop />
 
@@ -164,7 +170,7 @@ export default function FinalLovePage() {
                 </div>
             )}
 
-            {/* 💌 FINAL CARD */}
+            {/* 💌 FINAL CARD (Appears & Vanishes in a cycle) */}
             {isFinished && showFinalCard && (
                 <div className="final-layer">
                     <div className="glass-card">
