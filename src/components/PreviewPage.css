@@ -7,12 +7,12 @@
     --color-gradient-red: #f5576c;
     --color-purple-light: #667eea;
     --color-purple-dark: #764ba2;
+    --color-success-green: #2ecc71;
+    /* New for Free Mode */
     --color-gray-light: #6c757d;
     --color-gray-dark: #5a6268;
     --color-text-primary: #2d3436;
     --color-text-secondary: #2c3e50;
-    --color-gold: #d4af37;
-    --color-gold-dark: #c9a227;
     --spacing-xs: 0.5rem;
     --spacing-sm: 1rem;
     --spacing-md: 1.5rem;
@@ -20,34 +20,20 @@
     --spacing-xl: 3rem;
     --border-radius-sm: 8px;
     --border-radius-md: 12px;
-    --border-radius-lg: 50px;
-    --font-size-sm: 0.9rem;
-    --font-size-base: 0.95rem;
     --font-size-md: 1.1rem;
     --font-size-lg: 1.2rem;
-    --font-size-xl: 1.5rem;
-    --font-size-xxl: 2rem;
     --font-size-xxxl: 2.5rem;
-    --font-weight-normal: 600;
-    --font-weight-bold: 700;
-    --font-weight-extra-bold: 800;
     --transition-speed: 0.3s;
     --max-width-container: 800px;
-    --max-width-photo: 600px;
-    --carousel-btn-size: 50px;
-    --carousel-btn-size-mobile: 40px;
-    --indicator-size: 10px;
 }
 
 /* 🏁 THE LAYOUT FIX */
 .preview-page {
     min-height: 100vh;
     width: 100vw;
-    /* Forces full viewport width */
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* Centers container horizontally */
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     position: relative;
     overflow-x: hidden;
@@ -55,32 +41,31 @@
     padding: 0;
 }
 
-/* 💳 PAYMENT BANNER - Full Width */
+/* 🎊 CELEBRATION BANNER - Updated from Payment Banner */
 .payment-banner {
     width: 100%;
-    background: linear-gradient(135deg, var(--color-purple-light) 0%, var(--color-purple-dark) 100%);
+    background: linear-gradient(135deg, var(--color-gradient-pink) 0%, var(--color-gradient-red) 100%);
     color: var(--color-white);
     padding: var(--spacing-sm);
     text-align: center;
-    font-weight: var(--font-weight-normal);
-    font-size: var(--font-size-base);
+    font-weight: 600;
+    font-size: 0.95rem;
     position: sticky;
     top: 0;
     z-index: 100;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* 📦 CONTENT CONTAINER - Centered & Responsive */
+/* 📦 CONTENT CONTAINER */
 .preview-container {
     width: 100%;
     max-width: var(--max-width-container);
     margin: 0 auto;
     padding: var(--spacing-xl) var(--spacing-sm);
     flex-grow: 1;
-    /* Pushes footer down */
 }
 
-/* 🎨 THEME GRADIENTS - Applied to FULL background */
+/* 🎨 THEME GRADIENTS */
 .theme-romantic {
     background: linear-gradient(135deg, var(--color-romantic-light) 0%, var(--color-romantic-dark) 100%);
     color: var(--color-romantic-text);
@@ -99,7 +84,6 @@
     margin-bottom: var(--spacing-xl);
     padding: var(--spacing-lg);
     background: rgba(255, 255, 255, 0.95);
-    /* Glass-like card */
     backdrop-filter: blur(5px);
     border-radius: var(--border-radius-md);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
@@ -114,7 +98,7 @@
 
 .section-title {
     font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-bold);
+    font-weight: 700;
     text-align: center;
     margin-bottom: var(--spacing-md);
     color: var(--color-text-primary);
@@ -136,14 +120,14 @@
 .partner-name {
     font-size: var(--font-size-xxxl);
     margin-bottom: var(--spacing-xs);
-    font-weight: var(--font-weight-extra-bold);
+    font-weight: 800;
     background: linear-gradient(135deg, var(--color-gradient-pink) 0%, var(--color-gradient-red) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
 
-/* 🚀 BUTTONS */
+/* 🚀 UPDATED BUTTONS (No more purple "Payment" look) */
 .preview-actions {
     display: flex;
     gap: var(--spacing-md);
@@ -154,22 +138,29 @@
 .action-btn {
     padding: var(--spacing-sm) 2.5rem;
     font-size: var(--font-size-md);
-    font-weight: var(--font-weight-normal);
+    font-weight: 600;
     border: none;
     border-radius: var(--border-radius-sm);
     cursor: pointer;
     transition: all var(--transition-speed) ease;
 }
 
+.edit-btn {
+    background: var(--color-white);
+    color: var(--color-text-primary);
+    border: 1px solid #ddd;
+}
+
 .payment-btn {
-    background: linear-gradient(135deg, var(--color-purple-light) 0%, var(--color-purple-dark) 100%);
+    /* This is now the "Create" button */
+    background: linear-gradient(135deg, var(--color-gradient-pink) 0%, var(--color-gradient-red) 100%);
     color: var(--color-white);
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
 }
 
 .payment-btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    box-shadow: 0 6px 20px rgba(245, 87, 108, 0.5);
 }
 
 /* 📱 MOBILE FIXES */
@@ -180,7 +171,6 @@
 
     .preview-actions {
         flex-direction: column-reverse;
-        /* Edit on bottom on mobile */
     }
 
     .action-btn {
@@ -188,7 +178,7 @@
     }
 }
 
-/* 📋 COMPLIANCE FOOTER - Full Width Centered */
+/* 📋 COMPLIANCE FOOTER */
 .compliance-footer {
     width: 100%;
     margin-top: auto;

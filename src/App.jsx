@@ -5,7 +5,7 @@ import { AnimatePresence } from 'framer-motion';
 // Import Pages
 import LovePage from './pages/LovePage';
 import PreviewPage from './components/PreviewPage';
-import PaymentSuccessPage from './pages/PaymentSuccessPage';
+import PaymentSuccessPage from './pages/SuccessPage';
 import FinalLovePage from './pages/FinalLovePage';
 
 // Import Compliance Pages

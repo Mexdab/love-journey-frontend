@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './PreviewPage.css';
 
-// 🛠️ FIX 1: Point directly to Render (No more Localhost)
+// Pointing to your live Render Backend
 const API_BASE_URL = "https://love-journey-backend-eqyf.onrender.com";
 
 const PreviewPage = () => {
@@ -22,11 +22,9 @@ const PreviewPage = () => {
         pageType = "relationship",
         theme = "romantic",
         photos = [],
-        // Confession Fields
         feelingsStart,
         admireMost,
         theQuestion,
-        // Relationship Fields
         memoryType,
         memoryText,
         future,
@@ -34,12 +32,7 @@ const PreviewPage = () => {
         appreciationCustom
     } = formDataRaw;
 
-    useEffect(() => {
-        if (!window.Razorpay) {
-            console.error("Razorpay SDK not loaded. Add script to index.html");
-        }
-    }, []);
-
+    // Helper to upload images to Cloudinary via your backend
     const uploadImagesToBackend = async (imageFiles) => {
         if (!imageFiles || imageFiles.length === 0) return [];
         const uploadData = new FormData();
@@ -56,82 +49,43 @@ const PreviewPage = () => {
         return data.photos;
     };
 
-    const handlePayment = async () => {
-        if (!window.Razorpay) {
-            alert("Payment system loading... please wait or refresh.");
-            return;
-        }
-
+    // 🚀 NEW: Direct Creation Function (No Razorpay)
+    const handleCreate = async () => {
         setIsProcessing(true);
         setStatusMessage("Uploading your memories... 📸");
 
         try {
+            // A. Upload photos first
             let uploadedPhotos = [];
             if (photos && photos.length > 0) {
                 uploadedPhotos = await uploadImagesToBackend(photos);
             }
 
-            setStatusMessage("Initializing Secure Payment... 💳");
+            setStatusMessage("Creating your Cinematic Journey... ✨");
 
-            const orderRes = await fetch(`${API_BASE_URL}/api/payment/create-order`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount: 10 })
-            });
-
-            if (!orderRes.ok) throw new Error("Order creation failed");
-            const orderData = await orderRes.json();
-
-            // 🛠️ FIX 2: Use the Environment Variable for the Key (or paste your rzp_live_ key here)
-            const options = {
-                key: import.meta.env.VITE_RAZORPAY_KEY_ID, // Ensure this is set in Vercel!
-                amount: orderData.order.amount,
-                currency: orderData.order.currency,
-                name: "Love Journey",
-                description: `For ${partnerName}`,
-                order_id: orderData.order.id,
-
-                handler: async function (response) {
-                    setStatusMessage("Creating Page... ✨");
-                    try {
-                        const verifyPayload = {
-                            razorpay_order_id: response.razorpay_order_id,
-                            razorpay_payment_id: response.razorpay_payment_id,
-                            razorpay_signature: response.razorpay_signature,
-                            formData: {
-                                ...formDataRaw,
-                                photos: uploadedPhotos
-                            }
-                        };
-
-                        const verifyRes = await fetch(`${API_BASE_URL}/api/payment/verify`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(verifyPayload)
-                        });
-
-                        const verifyData = await verifyRes.json();
-                        if (verifyData.success) {
-                            navigate('/success', { state: { slug: verifyData.slug } });
-                        } else {
-                            alert("Verification failed: " + verifyData.message);
-                            setIsProcessing(false);
-                        }
-                    } catch (err) {
-                        console.error(err);
-                        alert("Error saving your page. Contact support.");
-                        setIsProcessing(false);
-                    }
-                },
-                theme: { color: "#E11D48" },
-                modal: { ondismiss: () => setIsProcessing(false) }
+            // B. Send all data to the backend 'create-page' route
+            const payload = {
+                ...formDataRaw,
+                photos: uploadedPhotos
             };
 
-            const rzp = new window.Razorpay(options);
-            rzp.open();
+            const response = await fetch(`${API_BASE_URL}/api/love/create-page`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                // C. Redirect to success page with the new slug
+                navigate('/success', { state: { slug: result.slug } });
+            } else {
+                throw new Error(result.message || "Failed to create page");
+            }
 
         } catch (error) {
-            console.error(error);
+            console.error("CREATION ERROR:", error);
             alert("Error: " + error.message);
             setIsProcessing(false);
         }
@@ -140,7 +94,7 @@ const PreviewPage = () => {
     return (
         <div className={`preview-page theme-${theme.toLowerCase()}`}>
             <div className="payment-banner">
-                🔒 Preview Mode. Pay ₹10 to unlock the full cinematic experience.
+                💝 Surprise your partner with a cinematic love story.
             </div>
 
             <div className="preview-container">
@@ -151,20 +105,17 @@ const PreviewPage = () => {
                 </header>
 
                 {pageType === 'confession' ? (
-                    // 💔 SINGLE / CONFESSION FLOW
                     <>
                         <div className="story-section">
                             <div className="section-icon">📅</div>
                             <h3 className="section-title">The Beginning</h3>
                             <div className="section-content">{feelingsStart}</div>
                         </div>
-
                         <div className="story-section">
                             <div className="section-icon">✨</div>
                             <h3 className="section-title">What I Admire</h3>
                             <div className="section-content">I admire your {admireMost}</div>
                         </div>
-
                         <div className="story-section">
                             <div className="section-icon">💌</div>
                             <h3 className="section-title">The Question</h3>
@@ -172,14 +123,12 @@ const PreviewPage = () => {
                         </div>
                     </>
                 ) : (
-                    // ❤️ IN LOVE / RELATIONSHIP FLOW
                     <>
                         <div className="story-section">
                             <div className="section-icon">📸</div>
                             <h3 className="section-title">A Special {memoryType}</h3>
                             <div className="section-content">{memoryText}</div>
                         </div>
-
                         <div className="story-section">
                             <div className="section-icon">💖</div>
                             <h3 className="section-title">I Appreciate...</h3>
@@ -187,7 +136,6 @@ const PreviewPage = () => {
                                 {appreciation === 'Other' ? appreciationCustom : appreciation}
                             </div>
                         </div>
-
                         <div className="story-section">
                             <div className="section-icon">🌍</div>
                             <h3 className="section-title">Our Dream</h3>
@@ -200,18 +148,18 @@ const PreviewPage = () => {
                     <button className="action-btn edit-btn" onClick={() => navigate(-1)} disabled={isProcessing}>
                         ← Edit Details
                     </button>
-                    <button className="action-btn payment-btn" onClick={handlePayment} disabled={isProcessing}>
-                        {isProcessing ? statusMessage : "Pay ₹10 to Create 💖"}
+                    {/* Updated Button to call handleCreate */}
+                    <button className="action-btn payment-btn" onClick={handleCreate} disabled={isProcessing}>
+                        {isProcessing ? statusMessage : "Create My Love Page 💖"}
                     </button>
                 </div>
             </div>
 
             <footer className="compliance-footer">
                 <div className="footer-links">
-                    <a href="https://wa.me/917907566244" target="_blank" rel="noopener noreferrer">Contact Us</a>
-                    <a href="/terms">Terms & Conditions</a>
-                    <a href="/privacy">Privacy Policy</a>
-                    <a href="/refund">Refund Policy</a>
+                    <a href="https://wa.me/917907566244" target="_blank" rel="noopener noreferrer">Support</a>
+                    <a href="/terms">Terms</a>
+                    <a href="/privacy">Privacy</a>
                 </div>
                 <p>© 2026 Love Journey. All rights reserved.</p>
             </footer>

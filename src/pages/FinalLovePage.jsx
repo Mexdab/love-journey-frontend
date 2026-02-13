@@ -3,14 +3,8 @@ import { useParams } from "react-router-dom";
 import Confetti from "react-confetti";
 import "./FinalLovePage.css";
 
-// 🗺️ VIDEO ASSET MAP (Ensure these videos are 40s+ long)
-const THEME_VIDEOS = {
-    romantic: "/videos/romantic_full.mp4",
-    playful: "/videos/playful_full.mp4",
-    deep: "/videos/deep_full.mp4",
-    cute: "/videos/cute_full.mp4",
-    default: "/videos/romantic_full.mp4"
-};
+// 🎥 Ensure your video is in public/videos/romantic_full.mp4
+const MAIN_VIDEO_SOURCE = "/videos/romantic_full.mp4";
 
 export default function FinalLovePage() {
     const { slug } = useParams();
@@ -20,13 +14,13 @@ export default function FinalLovePage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
-    const [step, setStep] = useState(0); // 0, 1, 2, 3 (Slides), 4 (End)
+    const [step, setStep] = useState(0);
     const [isFinished, setIsFinished] = useState(false);
     const [videoStarted, setVideoStarted] = useState(false);
 
-    // 1. FETCH DATA 🌍
+    // 1. FETCH DATA FROM RENDER 🌍
     useEffect(() => {
-        const API_BASE_URL = import.meta.env.VITE_API_URL || "https://love-journey-backend-eqyf.onrender.com";
+        const API_BASE_URL = "https://love-journey-backend-eqyf.onrender.com";
 
         fetch(`${API_BASE_URL}/api/love/${slug}`)
             .then(res => {
@@ -56,28 +50,22 @@ export default function FinalLovePage() {
             else if (level.includes("heart")) nervousText = "My heart is pounding right now 💓";
 
             return [
-                // Step 0: 0-8s
                 { title: `Hey ${data.partnerName}...`, subtitle: `I've been holding this back for a while.\n${nervousText}` },
-                // Step 1: 8-16s
                 { title: "It all started...", subtitle: `"${data.feelingsStart}"\nSince then, everything changed.` },
-                // Step 2: 16-24s
                 { title: "What I admire most...", subtitle: `Is your ${data.admireMost}.\nIt makes you so special to me.` },
-                // Step 3: 24-32s (The Buildup)
                 { title: "And now...", subtitle: "I have just one question for you..." }
             ][step];
         } else {
             const feelings = data.feelings || [];
-            const feelingsString = feelings.join(", ").replace(/, ([^,]*)$/, ' and $1');
+            const feelingsString = feelings.length > 0
+                ? feelings.join(", ").replace(/, ([^,]*)$/, ' and $1')
+                : "happy";
             const memoryTitle = data.memoryType ? `Remember our ${data.memoryType}?` : "A Special Moment";
 
             return [
-                // Step 0: 0-8s
                 { title: `To my favorite person, ${data.partnerName}`, subtitle: `Celebrating our beautiful journey of being\n✨ ${data.relationshipStatus} ✨` },
-                // Step 1: 8-16s
                 { title: "You make me feel...", subtitle: `So ${feelingsString}.\n(And I mean every word of that ❤️)` },
-                // Step 2: 16-24s
                 { title: memoryTitle, subtitle: `"${data.memoryText}"` },
-                // Step 3: 24-32s
                 { title: `I love ${data.appreciationCustom || data.appreciation}`, subtitle: `I can't wait for ${data.future}.\n\nLove, ${data.showYourName ? data.yourName : "Me"}` }
             ][step];
         }
@@ -85,17 +73,15 @@ export default function FinalLovePage() {
 
     const content = getMessage() || {};
     const toneKey = data.tone ? data.tone.toLowerCase() : 'default';
-    const videoSrc = THEME_VIDEOS[toneKey] || THEME_VIDEOS.default;
 
-    // ⚡ 3. THE 32-SECOND PAUSE LOGIC
+    // ⚡ 3. THE PAUSE LOGIC
     const handleTimeUpdate = () => {
-        if (!videoRef.current || isFinished) return; // Don't pause if finished!
+        if (!videoRef.current || isFinished) return;
 
         const currentTime = videoRef.current.currentTime;
-        const targetTime = (step + 1) * 8; // Targets: 8, 16, 24, 32
+        const targetTime = (step + 1) * 8; // Steps at 8, 16, 24, 32s
 
-        // If we hit the target time (with small buffer), PAUSE
-        if (currentTime >= targetTime && currentTime < targetTime + 0.5) {
+        if (currentTime >= targetTime && currentTime < targetTime + 0.3) {
             videoRef.current.pause();
         }
     };
@@ -103,17 +89,14 @@ export default function FinalLovePage() {
     // ⏭️ 4. HANDLE "NEXT" CLICK
     const handleNext = () => {
         if (!videoStarted) {
-            // Start Video
             setVideoStarted(true);
             videoRef.current.play();
         } else if (step < 3) {
-            // Move to next slide (0->1, 1->2, 2->3) and Resume Video
             setStep(prev => prev + 1);
             videoRef.current.play();
         } else {
-            // STEP 4: Play to End (Finish)
             setIsFinished(true);
-            videoRef.current.play(); // This plays past 32s to the end
+            videoRef.current.play();
         }
     };
 
@@ -121,39 +104,35 @@ export default function FinalLovePage() {
         <div className={`final-page theme-${toneKey}`}>
             {isFinished && <Confetti recycle={true} numberOfPieces={300} />}
 
-            {/* 🎥 VIDEO (Remains visible even when finished for 'Play to End' effect) */}
             <div className="video-background-container">
                 <video
                     ref={videoRef}
-                    src={videoSrc}
+                    src={MAIN_VIDEO_SOURCE}
                     className="cinematic-video"
                     playsInline
-                    muted={false}
                     onTimeUpdate={handleTimeUpdate}
                     preload="auto"
                 />
                 <div className={`video-overlay ${isFinished ? 'darker-overlay' : ''}`}></div>
             </div>
 
-            {/* 📜 TEXT SLIDES (Hidden when finished) */}
             {!isFinished && (
-                <div className="cinematic-content fade-in" onClick={handleNext}>
+                <div className="cinematic-content" onClick={handleNext}>
                     {!videoStarted ? (
                         <div className="start-prompt">
                             <h1>For {data.partnerName} ❤️</h1>
-                            <p>(Tap to begin)</p>
+                            <p>(Tap to begin your journey)</p>
                         </div>
                     ) : (
-                        <>
+                        <div className="text-slide fade-in" key={step}>
                             <h1 className="cinematic-title">{content.title}</h1>
                             <p className="cinematic-subtitle">{content.subtitle}</p>
-                            <div className="tap-instruction">(Tap to continue)</div>
-                        </>
+                            <div className="tap-instruction">Tap to continue...</div>
+                        </div>
                     )}
                 </div>
             )}
 
-            {/* 💌 FINAL CARD (Appears at Step 4) */}
             {isFinished && (
                 <div className="overlay fade-in">
                     <div className="glass-card final-card">
