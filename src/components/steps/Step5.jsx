@@ -2,11 +2,11 @@ import { Heart, Star, Sun, Smile, Coffee } from "lucide-react";
 
 export default function Step5({ form, update, next, back }) {
   const options = [
-    { label: "Their Kindness", icon: <Heart size={18} /> },
-    { label: "Their Ambition", icon: <Star size={18} /> },
-    { label: "Their Humor", icon: <Smile size={18} /> },
-    { label: "Their Energy", icon: <Sun size={18} /> },
-    { label: "Their Patience", icon: <Coffee size={18} /> },
+    { label: "Kindness", icon: <Heart size={18} /> },
+    { label: "Ambition", icon: <Star size={18} /> },
+    { label: "Humor", icon: <Smile size={18} /> },
+    { label: "Energy", icon: <Sun size={18} /> },
+    { label: "Patience", icon: <Coffee size={18} /> },
   ];
 
   return (

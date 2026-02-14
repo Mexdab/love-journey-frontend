@@ -59,7 +59,7 @@ export default function FinalLovePage() {
                 { title: `Hey ${partner}...`, subtitle: nervousIntro },
                 { title: "It all started when...", subtitle: `"${data.feelingsStart}"` },
                 { title: "I can't stop thinking about...", subtitle: `Your ${data.admireMost}.\nIt makes you so special to me.` },
-                { title: "And now...", subtitle: "I have something important to ask..." }
+                { title: "And now...", subtitle: "I've been meaning to tell you..." }
             ][step];
         } else {
             let feelingsText = "happy";

@@ -40,7 +40,7 @@ export default function PaymentSuccessPage() {
                     ✅
                 </div>
 
-                <h1>Payment Successful! 🎉</h1>
+                <h1>Page Created! 🎉</h1>
                 <p className="subtitle">Your Love Page is ready to share.</p>
 
                 <div className="link-box">
