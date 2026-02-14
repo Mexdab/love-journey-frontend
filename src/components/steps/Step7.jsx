@@ -1,12 +1,47 @@
-import { Sparkles, MessageCircle, HeartHandshake, PenTool } from "lucide-react";
+import { useNavigate } from "react-router-dom"; // 1. Import Navigation
+import { Sparkles } from "lucide-react";
 
-export default function Step7({ form, update, back, next }) {
+export default function Step7({ form, update, back }) {
+    const navigate = useNavigate(); // 2. Setup Hook
+
     const tones = [
         { label: "Romantic", icon: "🌹" },
         { label: "Playful", icon: "😉" },
         { label: "Deep", icon: "🌌" },
         { label: "Cute", icon: "🥰" },
     ];
+
+    // 🚀 THE MAGIC FUNCTION
+    const handleFinish = () => {
+        // Prepare the final data bundle
+        const finalData = {
+            pageType: 'relationship',
+
+            // Identity
+            relationshipStatus: form.relationship,
+            yourName: form.yourName || "Me",
+            showYourName: form.showYourName,
+            partnerName: form.partnerName,
+
+            // Core Content
+            feelings: form.feelings,
+            memoryEnabled: form.memoryEnabled,
+            memoryType: form.memoryType,
+            memoryText: form.memoryText,
+            appreciation: form.appreciation,
+            appreciationCustom: form.appreciationCustom,
+            future: form.future,
+
+            // The Vibe they just picked
+            tone: form.tone,
+
+            // ❌ No Photos
+            photos: []
+        };
+
+        // Go straight to Preview!
+        navigate("/preview", { state: finalData });
+    };
 
     return (
         <div className="fade-in-up">
@@ -29,12 +64,14 @@ export default function Step7({ form, update, back, next }) {
 
             <div style={{ display: "flex", gap: "12px", justifyContent: "center", marginTop: "32px" }}>
                 <button className="nav-btn" onClick={back}>Back</button>
+
+                {/* 3. Button now calls handleFinish instead of next() */}
                 <button
                     className="glow-btn"
-                    onClick={next}
+                    onClick={handleFinish}
                     disabled={!form.tone}
                 >
-                    Continue
+                    {form.tone ? "Finish & Preview ✨" : "Select a Vibe"}
                 </button>
             </div>
         </div>
